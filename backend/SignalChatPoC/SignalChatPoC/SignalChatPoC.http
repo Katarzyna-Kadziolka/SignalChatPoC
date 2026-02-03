@@ -1,0 +1,6 @@
+@SignalChatPoC_HostAddress = http://localhost:5105
+
+GET {{SignalChatPoC_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
