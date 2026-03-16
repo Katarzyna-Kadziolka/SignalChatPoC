@@ -4,5 +4,5 @@ namespace SignalChatPoC.Features.Messages;
 
 public interface IMessageClient
 {
-    Task Pending(List<Message> messages);
+    Task NewMessageSent(Message messages);
 }

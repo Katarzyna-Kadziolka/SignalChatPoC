@@ -1,29 +1,24 @@
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using SignalChatPoC.Domain.Entities;
-using SignalChatPoC.Infrastructure.Persistence;
 
 namespace SignalChatPoC.Features.Messages;
 
-public class MessageHub(DataContext dataContext) : Hub<IMessageClient>
+public class MessageHub : Hub<IMessageClient>
 {
-    public async Task Send(Message message)
+    private static readonly List<Message> Messages = [];
+    public async Task Send(MessageRequest messageRequest)
     {
-        dataContext.Messages.Add(message);
-        await dataContext.SaveChangesAsync();
-        
-        await EmitLastMessages();
-    }
-    
-    public async Task EmitLastMessages()
-    {
-        var messages = dataContext.Messages
-            .Include(m => m.Sender)
-            .OrderByDescending(m => m.SentAt)
-            .Take(10)
-            .ToList();
+        var message = new Message
+        {
+            Id = Guid.NewGuid(),
+            Content = messageRequest.Content,
+            SentAt = messageRequest.SentAt,
+            SenderId = Guid.NewGuid(),
+            Sender = new User { Id = Guid.NewGuid(), Name = "Anonymous" }
+        };
 
-        await Clients.All.Pending(messages);
+        Messages.Add(message);
+        await Clients.Others.NewMessageSent(message);
     }
 
     public override async Task OnConnectedAsync()

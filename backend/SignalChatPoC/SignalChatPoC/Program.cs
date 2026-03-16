@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using SignalChatPoC.Features.Chat;
 using SignalChatPoC.Features.Messages;
-using SignalChatPoC.Infrastructure.Persistence;
-using SignalChatPoC.Infrastructure.Persistence.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=mydatabase.sqlite"));
-builder.Services.AddHostedService<SeedingWorker>();
 builder.Services.AddSignalR();
+builder.Services.AddCors(o => o.AddDefaultPolicy(
+    policyBuilder => policyBuilder
+        .WithOrigins("http://localhost:4200")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials())
+);
 
 var app = builder.Build();
 
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 
