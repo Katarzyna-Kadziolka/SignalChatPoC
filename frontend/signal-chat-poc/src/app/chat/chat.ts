@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, NgZone, OnInit, signal} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-client';
 
@@ -9,20 +9,25 @@ import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-cl
   styleUrl: './chat.scss',
 })
 export class Chat implements OnInit{
-  private realtimeClient = inject(RealtimeClient)
   @Input() message: string = "";
+  public receivedMessages = signal<string[]>([]);
+
+  private ngZone = inject(NgZone);
+  private realtimeClient = inject(RealtimeClient)
   ngOnInit(): void {
     this.realtimeClient.newMessageSent.subscribe(message => {
-      console.log('New message received:', message);
+      this.ngZone.run(() => {
+        this.receivedMessages.update(messages => [...messages, message.content]);
+      });
     });
   }
 
   protected async sendMessage() {
-    console.log("send message");
-
     await this.realtimeClient.send({
       sentAt: new Date(),
       content: this.message,
     })
+
+    this.message = '';
   }
 }
