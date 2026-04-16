@@ -1,6 +1,7 @@
 import {Component, ElementRef, inject, Input, NgZone, OnInit, signal, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-client';
+import {MessageRequest} from '../../features/messages/message-request';
 
 @Component({
   selector: 'app-chat',
@@ -12,6 +13,7 @@ export class Chat implements OnInit{
   @Input() message: string = "";
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
   public receivedMessages = signal<string[]>([]);
+  public sendMessages = signal<MessageRequest[]>([]);
 
   private ngZone = inject(NgZone);
   private realtimeClient = inject(RealtimeClient)
@@ -24,10 +26,12 @@ export class Chat implements OnInit{
   }
 
   protected async sendMessage() {
-    await this.realtimeClient.send({
+    let newMessage : MessageRequest = {
       sentAt: new Date(),
       content: this.message,
-    })
+    }
+    await this.realtimeClient.send(newMessage)
+    this.sendMessages.update(messages => [...messages, newMessage.content]);
 
     this.message = '';
     this.messageInput.nativeElement.blur();
