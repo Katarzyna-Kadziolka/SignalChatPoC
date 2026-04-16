@@ -3,4 +3,4 @@
     <div>{{msg}}</div>
   }
 </div>
-<input #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
+<input class="chat-input" #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
