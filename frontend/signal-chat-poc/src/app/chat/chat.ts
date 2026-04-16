@@ -1,4 +1,4 @@
-import {Component, inject, Input, NgZone, OnInit, signal} from '@angular/core';
+import {Component, ElementRef, inject, Input, NgZone, OnInit, signal, ViewChild} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-client';
 
@@ -10,6 +10,7 @@ import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-cl
 })
 export class Chat implements OnInit{
   @Input() message: string = "";
+  @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
   public receivedMessages = signal<string[]>([]);
 
   private ngZone = inject(NgZone);
@@ -29,5 +30,7 @@ export class Chat implements OnInit{
     })
 
     this.message = '';
+    this.messageInput.nativeElement.blur();
+    this.messageInput.nativeElement.focus();
   }
 }
