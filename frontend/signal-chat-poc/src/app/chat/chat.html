@@ -1,6 +1,8 @@
 <div class="chat-window">
-  @for (msg of receivedMessages(); track msg) {
-    <div>{{msg}}</div>
+  @for (msg of messages(); track msg) {
+    <div [ngClass]="{ 'received-message': msg.type === ChatMessageType.Received, 'send-message': msg.type === ChatMessageType.Send }">
+      {{msg.content}}
+    </div>
   }
 </div>
 <input class="chat-input" #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
