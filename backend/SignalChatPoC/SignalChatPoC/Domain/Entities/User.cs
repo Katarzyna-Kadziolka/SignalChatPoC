@@ -1,3 +1,5 @@
+using SignalChatPoC.Features.Messages;
+
 namespace SignalChatPoC.Domain.Entities;
 
 public class User
