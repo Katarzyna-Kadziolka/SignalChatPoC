@@ -47,22 +47,22 @@ public class MessageHub : Hub<IMessageClient>
         };
         Messages.Add(message);
 
-        await Clients.Group(messageRequest.GroupName).NewMessageSent(message);
+        await Clients.OthersInGroup(messageRequest.GroupName).NewMessageSent(message);
     }
 
-    public async Task AddToGroup(string groupName)
+    public async Task AddToGroup(AddToGroupRequest request)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        await Groups.AddToGroupAsync(Context.ConnectionId, request.GroupName);
 
-        var message = new NewUserJoinedToGroupMessage { ConnectionId = Context.ConnectionId, GroupName = groupName };
-        await Clients.Group(groupName).NewUserJoinedToGroup(message);
+        var message = new NewUserJoinedToGroupMessage { ConnectionId = Context.ConnectionId, GroupName = request.GroupName };
+        await Clients.Group(request.GroupName).NewUserJoinedToGroup(message);
     }
 
-    public async Task RemoveFromGroup(string groupName)
+    public async Task RemoveFromGroup(RemoveFromGroupRequest request)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, request.GroupName);
 
-        var message = new UserRemovedFromGroupMessage { ConnectionId = Context.ConnectionId, GroupName = groupName };
-        await Clients.Group(groupName).UserRemovedFromGroup(message);
+        var message = new UserRemovedFromGroupMessage { ConnectionId = Context.ConnectionId, GroupName = request.GroupName };
+        await Clients.Group(request.GroupName).UserRemovedFromGroup(message);
     }
 }
