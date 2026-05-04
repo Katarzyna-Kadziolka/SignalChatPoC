@@ -7,12 +7,4 @@
 </div>
 <input class="chat-input" #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
 <br>
-<select [(ngModel)]="activeGroup">
-  @for (mode of modes(); track mode) {
-    <option [value]="mode">{{mode}}</option>
-  })
-</select>
-<br>
-<input type="text" #groupNameInput [(ngModel)]="groupName" placeholder="Group name" (keyup.enter)="joinGroup()">
-<br>
-<input type="text" #removeGroupNameInput [(ngModel)]="removeGroupName" placeholder="Group name to leave" (keyup.enter)="removeFromGroup()">
+<app-group [(activeGroupMode)]="activeGroupMode" (joinedToGroup)="onJoinedToGroup($event)" (removedFromGroup)="onRemovedFromGroup($event)" />

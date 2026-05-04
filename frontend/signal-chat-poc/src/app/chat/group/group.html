@@ -1,0 +1,9 @@
+<select [(ngModel)]="activeGroupMode">
+  @for (mode of groupModes(); track mode) {
+    <option [value]="mode">{{mode}}</option>
+  })
+</select>
+<br>
+<input type="text" #groupNameInput [(ngModel)]="groupName" placeholder="Group name" (keyup.enter)="joinGroup()">
+<br>
+<input type="text" #removeGroupNameInput [(ngModel)]="removeGroupName" placeholder="Group name to leave" (keyup.enter)="removeFromGroup()">

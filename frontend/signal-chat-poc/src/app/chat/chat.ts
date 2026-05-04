@@ -8,29 +8,25 @@ import {NgClass} from '@angular/common';
 import {NewUserJoinedToGroupMessage} from '../../domain/entities/new-user-joined-to-group-message';
 import {UserRemovedFromGroupMessage} from '../../domain/entities/user-removed-from-group-message';
 import {MessageToGroupRequest} from '../../features/messages/message-to-group-request';
+import {Group} from './group/group';
 
 @Component({
   selector: 'app-chat',
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, Group],
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
 })
 export class Chat implements OnInit{
   @Input() message: string = "";
-  @Input() groupName: string = "";
-  @Input() removeGroupName: string = "";
   @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('groupNameInput') groupNameInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('removeGroupNameInput') removeGroupNameInput!: ElementRef<HTMLInputElement>;
-  public groups = signal<string[]>([]);
-  public activeGroup = signal<string>('all');
+
+  public activeGroupMode = 'all';
   public receivedMessages = signal<ChatMessage[]>([]);
   public sendMessages = signal<ChatMessage[]>([]);
   public messages = computed(() => this.receivedMessages()
       .concat(this.sendMessages())
       .sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime())
   )
-  public modes = computed(() => [...this.groups(), 'all'])
 
   private ngZone = inject(NgZone);
   private realtimeClient = inject(RealtimeClient)
@@ -54,7 +50,7 @@ export class Chat implements OnInit{
     }
 
     let sentAt = new Date()
-    if (this.activeGroup() == 'all') {
+    if (this.activeGroupMode == 'all') {
       let newMessage : MessageRequest = {
         sentAt: sentAt,
         content: this.message,
@@ -65,7 +61,7 @@ export class Chat implements OnInit{
       let newMessageToGroup : MessageToGroupRequest = {
         sentAt: sentAt,
         content: this.message,
-        groupName: this.activeGroup(),
+        groupName: this.activeGroupMode,
       }
       await this.realtimeClient.sendToGroup(newMessageToGroup)
     }
@@ -83,36 +79,20 @@ export class Chat implements OnInit{
     this.messageInput.nativeElement.focus();
   }
 
-  protected async joinGroup() {
-    if (this.groupName.trim() === '') {
-      return;
-    }
-
+  protected async onJoinedToGroup(groupName: string) {
     let newUserJoinedToGroupMessage : NewUserJoinedToGroupMessage = {
-      groupName: this.groupName,
+      groupName: groupName,
     }
 
     await this.realtimeClient.addToGroup(newUserJoinedToGroupMessage);
-    this.groups.update(groups => [...groups, this.groupName]);
-    this.groupName = '';
-    this.groupNameInput.nativeElement.blur();
-    this.groupNameInput.nativeElement.focus();
   }
 
-  protected async removeFromGroup() {
-    if (this.removeGroupName.trim() === '') {
-      return;
-    }
-
+  protected async onRemovedFromGroup(groupName: string) {
     let removedFromGroupMessage : UserRemovedFromGroupMessage = {
-      groupName: this.removeGroupName,
+      groupName: groupName,
     }
 
     await this.realtimeClient.removeFromGroup(removedFromGroupMessage);
-    this.groups.update(groups => groups.filter(group => group !== this.removeGroupName));
-    this.removeGroupName = '';
-    this.removeGroupNameInput.nativeElement.blur();
-    this.removeGroupNameInput.nativeElement.focus();
   }
 
   protected readonly ChatMessageType = ChatMessageType;
