@@ -5,6 +5,6 @@
     </div>
   }
 </div>
-<input class="chat-input" #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
+<app-message (messageSent)="sendMessage($event)"/>
 <br>
 <app-group [(activeGroupMode)]="activeGroupMode" (joinedToGroup)="onJoinedToGroup($event)" (removedFromGroup)="onRemovedFromGroup($event)" />

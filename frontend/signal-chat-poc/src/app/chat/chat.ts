@@ -1,4 +1,4 @@
-import {Component, computed, ElementRef, inject, Input, NgZone, OnInit, signal, ViewChild} from '@angular/core';
+import {Component, computed, inject, NgZone, OnInit, signal} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {RealtimeClient} from '../../features/messages/realtimeClient/realtime-client';
 import {MessageRequest} from '../../features/messages/message-request';
@@ -9,17 +9,15 @@ import {NewUserJoinedToGroupMessage} from '../../domain/entities/new-user-joined
 import {UserRemovedFromGroupMessage} from '../../domain/entities/user-removed-from-group-message';
 import {MessageToGroupRequest} from '../../features/messages/message-to-group-request';
 import {Group} from './group/group';
+import {Message} from './message/message';
 
 @Component({
   selector: 'app-chat',
-  imports: [FormsModule, NgClass, Group],
+  imports: [FormsModule, NgClass, Group, Message],
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
 })
 export class Chat implements OnInit{
-  @Input() message: string = "";
-  @ViewChild('messageInput') messageInput!: ElementRef<HTMLInputElement>;
-
   public activeGroupMode = 'all';
   public receivedMessages = signal<ChatMessage[]>([]);
   public sendMessages = signal<ChatMessage[]>([]);
@@ -44,39 +42,24 @@ export class Chat implements OnInit{
     });
   }
 
-  protected async sendMessage() {
-    if (this.message.trim() === '') {
-      return;
-    }
-
-    let sentAt = new Date()
+  protected async sendMessage(message: ChatMessage) {
     if (this.activeGroupMode == 'all') {
       let newMessage : MessageRequest = {
-        sentAt: sentAt,
-        content: this.message,
+        sentAt: message.sentAt,
+        content: message.content,
       }
       await this.realtimeClient.send(newMessage)
     }
     else {
       let newMessageToGroup : MessageToGroupRequest = {
-        sentAt: sentAt,
-        content: this.message,
+        sentAt: message.sentAt,
+        content: message.content,
         groupName: this.activeGroupMode,
       }
       await this.realtimeClient.sendToGroup(newMessageToGroup)
     }
 
-    let sendMessage : ChatMessage = {
-      content: this.message,
-      sentAt: sentAt,
-      type: ChatMessageType.Send
-    }
-
-    this.sendMessages.update(messages => [...messages, sendMessage]);
-
-    this.message = '';
-    this.messageInput.nativeElement.blur();
-    this.messageInput.nativeElement.focus();
+    this.sendMessages.update(messages => [...messages, message]);
   }
 
   protected async onJoinedToGroup(groupName: string) {
