@@ -1,1 +1,1 @@
-<input class="chat-input" #messageInput type="text" [(ngModel)]="message" (keyup.enter)="sendMessage()">
+<app-base-input (enterClicked)="sendMessage($event)" />

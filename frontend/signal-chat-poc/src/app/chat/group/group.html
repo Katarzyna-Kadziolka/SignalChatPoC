@@ -4,6 +4,6 @@
   })
 </select>
 <br>
-<input type="text" #groupNameInput [(ngModel)]="groupName" placeholder="Group name" (keyup.enter)="joinGroup()">
+<app-base-input (enterClicked)="joinGroup($event)" placeholder="Add to group"/>
 <br>
-<input type="text" #removeGroupNameInput [(ngModel)]="removeGroupName" placeholder="Group name to leave" (keyup.enter)="removeFromGroup()">
+<app-base-input (enterClicked)="removeFromGroup($event)" placeholder="Remove from group"/>
