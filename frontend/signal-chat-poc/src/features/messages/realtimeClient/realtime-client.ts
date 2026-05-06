@@ -3,11 +3,11 @@ import {Observable, Subject} from 'rxjs';
 import {Message} from '../../../domain/entities/message';
 import {HubConnection, HubConnectionBuilder} from '@microsoft/signalr';
 import {MessageRequest} from '../message-request';
-import {UserRemovedFromGroupMessage} from '../../../domain/entities/user-removed-from-group-message';
-import {NewUserJoinedToGroupMessage} from '../../../domain/entities/new-user-joined-to-group-message';
-import {MessageToGroupRequest} from '../message-to-group-request';
-import {RemoveFromGroupRequest} from '../remove-from-group-request';
-import {AddToGroupRequest} from '../add-to-group-request';
+import {RemoveFromGroupMessage} from '../../../domain/entities/remove-from-group-message';
+import {AddToGroupMessage} from '../../../domain/entities/add-to-group-message';
+import {MessageToGroupRequest} from '../groups/message-to-group-request';
+import {RemoveFromGroupRequest} from '../groups/remove-from-group-request';
+import {AddToGroupRequest} from '../groups/add-to-group-request';
 
 @Injectable({
   providedIn: 'root',
@@ -18,11 +18,11 @@ export class RealtimeClient {
   private newMessageSentSubject = new Subject<Message>();
   newMessageSent: Observable<Message> = this.newMessageSentSubject.asObservable();
 
-  private newUserJoinedToGroupSubject = new Subject<NewUserJoinedToGroupMessage>();
-  NewUserJoinedToGroup: Observable<NewUserJoinedToGroupMessage> = this.newUserJoinedToGroupSubject.asObservable();
+  private newUserJoinedToGroupSubject = new Subject<AddToGroupMessage>();
+  NewUserJoinedToGroup: Observable<AddToGroupMessage> = this.newUserJoinedToGroupSubject.asObservable();
 
-  private newUserRemovedFromGroupSubject = new Subject<UserRemovedFromGroupMessage>();
-  UserRemovedFromGroup: Observable<UserRemovedFromGroupMessage> = this.newUserRemovedFromGroupSubject.asObservable();
+  private newUserRemovedFromGroupSubject = new Subject<RemoveFromGroupMessage>();
+  UserRemovedFromGroup: Observable<RemoveFromGroupMessage> = this.newUserRemovedFromGroupSubject.asObservable();
 
   constructor() {
     this.hubConnection = new HubConnectionBuilder()
@@ -39,23 +39,23 @@ export class RealtimeClient {
       this.newMessageSentSubject.next(messages);
     });
 
-    this.hubConnection.on('NewUserJoinedToGroup', (messages: NewUserJoinedToGroupMessage) => {
+    this.hubConnection.on('NewUserJoinedToGroup', (messages: AddToGroupMessage) => {
       this.newUserJoinedToGroupSubject.next(messages);
     });
 
-    this.hubConnection.on('UserRemovedFromGroup', (messages: UserRemovedFromGroupMessage) => {
+    this.hubConnection.on('UserRemovedFromGroup', (messages: RemoveFromGroupMessage) => {
       this.newUserRemovedFromGroupSubject.next(messages);
     });
   }
 
-  async send(message: MessageRequest) {
+  async send(request: MessageRequest) {
     console.log("send");
-    await this.hubConnection.invoke('Send', message);
+    await this.hubConnection.invoke('Send', request);
   }
 
-  async sendToGroup(message: MessageToGroupRequest) {
+  async sendToGroup(request: MessageToGroupRequest) {
     console.log("sendToGroup");
-    await this.hubConnection.invoke('SendToGroup', message);
+    await this.hubConnection.invoke('SendToGroup', request);
   }
 
   async removeFromGroup(request: RemoveFromGroupRequest) {
@@ -63,8 +63,8 @@ export class RealtimeClient {
     await this.hubConnection.invoke('RemoveFromGroup', request);
   }
 
-  async addToGroup(groupName: AddToGroupRequest) {
+  async addToGroup(request: AddToGroupRequest) {
     console.log("addToGroup");
-    await this.hubConnection.invoke('AddToGroup', groupName);
+    await this.hubConnection.invoke('AddToGroup', request);
   }
 }

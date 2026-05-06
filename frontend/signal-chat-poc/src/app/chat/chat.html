@@ -5,6 +5,6 @@
     </div>
   }
 </div>
-<app-message (messageSent)="sendMessage($event)"/>
+<app-message (messageSent)="onSendMessage($event)"/>
 <br>
-<app-group [(activeGroupMode)]="activeGroupMode" (joinedToGroup)="onJoinedToGroup($event)" (removedFromGroup)="onRemovedFromGroup($event)" />
+<app-group [(activeGroupMode)]="activeGroupMode" (joinedToGroup)="onAddToGroup($event)" (removedFromGroup)="onRemoveFromGroup($event)" />

@@ -5,11 +5,13 @@ import {MessageRequest} from '../../features/messages/message-request';
 import {ChatMessage} from './chat-message';
 import {ChatMessageType} from './chat-message-type';
 import {NgClass} from '@angular/common';
-import {NewUserJoinedToGroupMessage} from '../../domain/entities/new-user-joined-to-group-message';
-import {UserRemovedFromGroupMessage} from '../../domain/entities/user-removed-from-group-message';
-import {MessageToGroupRequest} from '../../features/messages/message-to-group-request';
+import {AddToGroupMessage} from '../../domain/entities/add-to-group-message';
+import {RemoveFromGroupMessage} from '../../domain/entities/remove-from-group-message';
+import {MessageToGroupRequest} from '../../features/messages/groups/message-to-group-request';
 import {Group} from './group/group';
 import {Message} from './message/message';
+import {AddToGroupRequest} from '../../features/messages/groups/add-to-group-request';
+import {RemoveFromGroupRequest} from '../../features/messages/groups/remove-from-group-request';
 
 @Component({
   selector: 'app-chat',
@@ -42,37 +44,37 @@ export class Chat implements OnInit{
     });
   }
 
-  protected async sendMessage(message: ChatMessage) {
+  protected async onSendMessage(message: ChatMessage) {
     if (this.activeGroupMode == 'all') {
-      let newMessage : MessageRequest = {
+      let request : MessageRequest = {
         sentAt: message.sentAt,
         content: message.content,
       }
-      await this.realtimeClient.send(newMessage)
+      await this.realtimeClient.send(request)
     }
     else {
-      let newMessageToGroup : MessageToGroupRequest = {
+      let groupRequest : MessageToGroupRequest = {
         sentAt: message.sentAt,
         content: message.content,
         groupName: this.activeGroupMode,
       }
-      await this.realtimeClient.sendToGroup(newMessageToGroup)
+      await this.realtimeClient.sendToGroup(groupRequest)
     }
 
     this.sendMessages.update(messages => [...messages, message]);
   }
 
-  protected async onJoinedToGroup(groupName: string) {
-    let newUserJoinedToGroupMessage : NewUserJoinedToGroupMessage = {
-      groupName: groupName,
+  protected async onAddToGroup(message: AddToGroupMessage) {
+    let newUserJoinedToGroupMessage : AddToGroupRequest = {
+      groupName: message.groupName,
     }
 
     await this.realtimeClient.addToGroup(newUserJoinedToGroupMessage);
   }
 
-  protected async onRemovedFromGroup(groupName: string) {
-    let removedFromGroupMessage : UserRemovedFromGroupMessage = {
-      groupName: groupName,
+  protected async onRemoveFromGroup(message: RemoveFromGroupMessage) {
+    let removedFromGroupMessage : RemoveFromGroupRequest = {
+      groupName: message.groupName,
     }
 
     await this.realtimeClient.removeFromGroup(removedFromGroupMessage);
