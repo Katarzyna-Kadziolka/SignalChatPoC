@@ -21,7 +21,7 @@ export class Message {
     let sendMessage : ChatMessage = {
       content: message,
       sentAt: new Date(),
-      type: ChatMessageType.Send
+      type: ChatMessageType.Sent
     }
 
     this.messageSent.emit(sendMessage);

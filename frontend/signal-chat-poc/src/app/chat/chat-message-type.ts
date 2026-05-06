@@ -1,4 +1,4 @@
 export enum ChatMessageType {
-  Send,
+  Sent,
   Received
 }

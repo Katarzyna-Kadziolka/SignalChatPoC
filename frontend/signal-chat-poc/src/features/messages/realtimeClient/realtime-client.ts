@@ -16,13 +16,13 @@ export class RealtimeClient {
   private hubConnection: HubConnection;
 
   private newMessageSentSubject = new Subject<Message>();
-  newMessageSent: Observable<Message> = this.newMessageSentSubject.asObservable();
+  newMessageSent = this.newMessageSentSubject.asObservable();
 
   private newUserJoinedToGroupSubject = new Subject<AddToGroupMessage>();
-  NewUserJoinedToGroup: Observable<AddToGroupMessage> = this.newUserJoinedToGroupSubject.asObservable();
+  NewUserJoinedToGroup = this.newUserJoinedToGroupSubject.asObservable();
 
   private newUserRemovedFromGroupSubject = new Subject<RemoveFromGroupMessage>();
-  UserRemovedFromGroup: Observable<RemoveFromGroupMessage> = this.newUserRemovedFromGroupSubject.asObservable();
+  UserRemovedFromGroup = this.newUserRemovedFromGroupSubject.asObservable();
 
   constructor() {
     this.hubConnection = new HubConnectionBuilder()

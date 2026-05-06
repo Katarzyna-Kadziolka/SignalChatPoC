@@ -22,9 +22,9 @@ import {RemoveFromGroupRequest} from '../../features/messages/groups/remove-from
 export class Chat implements OnInit{
   public activeGroupMode = 'all';
   public receivedMessages = signal<ChatMessage[]>([]);
-  public sendMessages = signal<ChatMessage[]>([]);
+  public sentMessages = signal<ChatMessage[]>([]);
   public messages = computed(() => this.receivedMessages()
-      .concat(this.sendMessages())
+      .concat(this.sentMessages())
       .sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime())
   )
 
@@ -34,7 +34,7 @@ export class Chat implements OnInit{
     this.realtimeClient.newMessageSent.subscribe(message => {
       let receivedMessage: ChatMessage = {
         content: message.content,
-        sentAt: new Date(message.sentAt),
+        sentAt: message.sentAt,
         type: ChatMessageType.Received
       }
 
@@ -61,23 +61,23 @@ export class Chat implements OnInit{
       await this.realtimeClient.sendToGroup(groupRequest)
     }
 
-    this.sendMessages.update(messages => [...messages, message]);
+    this.sentMessages.update(messages => [...messages, message]);
   }
 
   protected async onAddToGroup(message: AddToGroupMessage) {
-    let newUserJoinedToGroupMessage : AddToGroupRequest = {
+    let addToGroupRequest : AddToGroupRequest = {
       groupName: message.groupName,
     }
 
-    await this.realtimeClient.addToGroup(newUserJoinedToGroupMessage);
+    await this.realtimeClient.addToGroup(addToGroupRequest);
   }
 
   protected async onRemoveFromGroup(message: RemoveFromGroupMessage) {
-    let removedFromGroupMessage : RemoveFromGroupRequest = {
+    let removeFromGroupRequest : RemoveFromGroupRequest = {
       groupName: message.groupName,
     }
 
-    await this.realtimeClient.removeFromGroup(removedFromGroupMessage);
+    await this.realtimeClient.removeFromGroup(removeFromGroupRequest);
   }
 
   protected readonly ChatMessageType = ChatMessageType;

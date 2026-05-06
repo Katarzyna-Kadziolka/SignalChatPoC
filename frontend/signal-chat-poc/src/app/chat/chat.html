@@ -1,6 +1,6 @@
 <div class="chat-window">
   @for (msg of messages(); track msg) {
-    <div [ngClass]="{ 'received-message': msg.type === ChatMessageType.Received, 'send-message': msg.type === ChatMessageType.Send }">
+    <div [ngClass]="{ 'received-message': msg.type === ChatMessageType.Received, 'send-message': msg.type === ChatMessageType.Sent }">
       {{msg.content}}
     </div>
   }
