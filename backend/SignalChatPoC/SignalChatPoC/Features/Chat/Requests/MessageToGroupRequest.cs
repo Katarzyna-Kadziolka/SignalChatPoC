@@ -1,4 +1,4 @@
-namespace SignalChatPoC.Features.Messages;
+namespace SignalChatPoC.Features.Chat.Requests;
 
 public class MessageToGroupRequest
 {

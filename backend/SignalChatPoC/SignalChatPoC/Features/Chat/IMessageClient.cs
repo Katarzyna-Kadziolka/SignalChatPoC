@@ -1,4 +1,6 @@
-namespace SignalChatPoC.Features.Messages;
+using SignalChatPoC.Features.Chat.Messages;
+
+namespace SignalChatPoC.Features.Chat;
 
 public interface IMessageClient
 {

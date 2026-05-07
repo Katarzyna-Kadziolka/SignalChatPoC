@@ -1,4 +1,4 @@
-using SignalChatPoC.Features.Messages;
+using SignalChatPoC.Features.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 

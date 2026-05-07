@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
 using SignalChatPoC.Domain.Entities;
+using SignalChatPoC.Features.Chat.Messages;
+using SignalChatPoC.Features.Chat.Requests;
 
-namespace SignalChatPoC.Features.Messages;
+namespace SignalChatPoC.Features.Chat;
 
 public class MessageHub : Hub<IMessageClient>
 {
-    private static readonly List<Message> Messages = [];
-
     public async Task Send(MessageRequest messageRequest)
     {
         var message = new Message
@@ -17,7 +17,6 @@ public class MessageHub : Hub<IMessageClient>
             SenderId = Guid.NewGuid(),
             Sender = new User { Id = Guid.NewGuid(), Name = "Anonymous" },
         };
-        Messages.Add(message);
 
         await Clients.Others.NewMessageSent(message);
     }
@@ -45,7 +44,6 @@ public class MessageHub : Hub<IMessageClient>
             Sender = new User { Id = Guid.NewGuid(), Name = "Anonymous" },
             GroupName = messageRequest.GroupName
         };
-        Messages.Add(message);
 
         await Clients.OthersInGroup(messageRequest.GroupName).NewMessageSent(message);
     }
